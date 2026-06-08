@@ -9,6 +9,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
 | v2.0.2 | [`v2.0.2`](https://github.com/chainguard-actions/chrnorm-deployment-status/tree/v2.0.2) | [`2afb7d2`](https://github.com/chrnorm/deployment-status/commit/2afb7d27101260f4a764219439564d954d10b5b0) |
+| v2.0.4 | [`v2.0.4`](https://github.com/chainguard-actions/chrnorm-deployment-status/tree/v2.0.4) | [`6df8d03`](https://github.com/chrnorm/deployment-status/commit/6df8d036fd2fee9eb82936733953da1f8382b41e) |
 
 ## Privacy
 

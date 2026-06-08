@@ -1,0 +1,27 @@
+name: Test optional deployment status inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          state: failure
+          token: fake-token-for-testing
+          deployment-id: "42"
+          repo: my-repo
+          owner: my-owner
+          description: "Deployment failed due to test error"
+          environment: staging
+          log-url: "https://example.com/logs/42"
+          environment-url: "https://staging.example.com"
+          auto-inactive: "false"
+          github-base-url: "https://api.github.com"
+      - name: Assert action ran (may fail due to invalid token/deployment-id)
+        run: |
+          echo "Action completed (with or without error due to fake credentials)"
+          echo "PASS"

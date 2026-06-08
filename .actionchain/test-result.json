@@ -1,7 +1,7 @@
 {
   "ran": true,
   "passed": true,
-  "output": "\n\u003e deployment-status@0.1.0 test\n\u003e jest\n\nPASS __tests__/main.test.ts\n  TODO - Add a test suite\n    ✓ TODO - Add a test (1 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       1 passed, 1 total\nSnapshots:   0 total\nTime:        2.695 s\nRan all test suites.\n",
-  "duration_ms": 3702,
+  "output": "\n\u003e deployment-status@0.1.0 test\n\u003e jest\n\nPASS __tests__/main.test.ts\n  TODO - Add a test suite\n    ✓ TODO - Add a test (1 ms)\n\nTest Suites: 1 passed, 1 total\nTests:       1 passed, 1 total\nSnapshots:   0 total\nTime:        2.383 s\nRan all test suites.\n",
+  "duration_ms": 3258,
   "exit_code": 0
 }

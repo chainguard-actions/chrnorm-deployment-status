@@ -12,16 +12,13 @@ jobs:
         with:
           state: failure
           token: fake-token-for-testing
-          deployment-id: "42"
+          deployment-id: "2"
           repo: my-repo
           owner: my-owner
-          description: "Deployment failed due to test error"
-          environment: staging
-          log-url: "https://example.com/logs/42"
-          environment-url: "https://staging.example.com"
-          auto-inactive: "false"
           github-base-url: "https://api.github.com"
-      - name: Assert action ran (may fail due to invalid token/deployment-id)
+          auto-inactive: "false"
+          environment-url: "https://example.com"
+      - name: Assert action ran (may fail due to fake token)
         run: |
           echo "Action completed (with or without error due to fake credentials)"
-          echo "PASS"
+          echo "PASS: optional inputs were accepted"

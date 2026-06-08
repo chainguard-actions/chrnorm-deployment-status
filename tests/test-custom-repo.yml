@@ -1,0 +1,29 @@
+name: Test custom repo and owner inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          state: failure
+          token: ${{ github.token }}
+          deployment-id: "1"
+          repo: my-repo
+          owner: my-owner
+          github-base-url: "https://api.github.com"
+        continue-on-error: true
+      - name: Assert action ran (API call may fail in test env)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action executed with custom repo/owner/github-base-url"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi

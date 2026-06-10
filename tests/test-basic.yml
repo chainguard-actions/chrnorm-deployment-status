@@ -12,8 +12,19 @@ jobs:
         with:
           state: success
           token: fake-token-for-testing
-          deployment-id: "1"
-      - name: Assert action ran (may fail due to invalid token)
+          deployment-id: "12345"
+          description: "Deployment completed successfully"
+          environment: production
+          log-url: "https://example.com/logs"
+          environment-url: "https://example.com"
+          auto-inactive: "false"
+      - name: Assert action ran (may fail due to invalid token/deployment-id)
         run: |
           echo "Action outcome: ${{ steps.action.outcome }}"
-          echo "PASS: action step completed (error expected with fake token)"
+          # The action is expected to fail with a fake token and deployment-id
+          # We just verify it ran and produced an outcome
+          if [ "${{ steps.action.outcome }}" = "" ]; then
+            echo "FAIL: action did not produce an outcome"
+            exit 1
+          fi
+          echo "PASS: action ran with outcome ${{ steps.action.outcome }}"

@@ -4,27 +4,37 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create a deployment to get a deployment ID
+        id: create-deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Create a deployment via the GitHub API and capture its ID
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/deployments" \
+            -d '{"ref":"main","environment":"test","auto_merge":false,"required_contexts":[]}')
+          DEPLOYMENT_ID=$(echo "$RESPONSE" | grep -o '"id":[0-9]*' | head -1 | grep -o '[0-9]*')
+          echo "deployment-id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
+          echo "Created deployment ID: $DEPLOYMENT_ID"
       - id: action
         uses: .
-        continue-on-error: true
         with:
           state: success
-          token: fake-token-for-testing
-          deployment-id: "12345"
-          description: "Deployment completed successfully"
-          environment: production
-          log-url: "https://example.com/logs"
-          environment-url: "https://example.com"
-          auto-inactive: "false"
-      - name: Assert action ran (may fail due to invalid token/deployment-id)
+          token: ${{ github.token }}
+          deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
+          repo: ${{ github.event.repository.name }}
+          owner: ${{ github.repository_owner }}
+          environment: test
+          description: "Test deployment status update"
+          log-url: "https://github.com/${{ github.repository }}/actions"
+      - name: Assert action completed without error
         run: |
-          echo "Action outcome: ${{ steps.action.outcome }}"
-          # The action is expected to fail with a fake token and deployment-id
-          # We just verify it ran and produced an outcome
-          if [ "${{ steps.action.outcome }}" = "" ]; then
-            echo "FAIL: action did not produce an outcome"
-            exit 1
-          fi
-          echo "PASS: action ran with outcome ${{ steps.action.outcome }}"
+          echo "Action completed successfully"
+          echo "PASS"

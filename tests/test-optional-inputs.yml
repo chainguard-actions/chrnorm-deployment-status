@@ -1,27 +1,42 @@
-name: Test optional deployment status inputs
+name: Test optional inputs coverage
 on:
   workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create a deployment to get a deployment ID
+        id: create-deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/deployments" \
+            -d '{"ref":"main","environment":"staging","auto_merge":false,"required_contexts":[]}')
+          DEPLOYMENT_ID=$(echo "$RESPONSE" | grep -o '"id":[0-9]*' | head -1 | grep -o '[0-9]*')
+          echo "deployment-id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
+          echo "Created deployment ID: $DEPLOYMENT_ID"
       - id: action
         uses: .
-        continue-on-error: true
         with:
-          state: failure
-          token: fake-token-for-testing
-          deployment-id: "42"
-          description: "Deployment failed in test environment"
+          state: in_progress
+          token: ${{ github.token }}
+          deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
+          repo: ${{ github.event.repository.name }}
+          owner: ${{ github.repository_owner }}
           environment: staging
-          log-url: "https://example.com/logs/42"
+          description: "Deployment in progress"
+          log-url: "https://github.com/${{ github.repository }}/actions"
           environment-url: "https://staging.example.com"
-          owner: test-owner
-          repo: test-repo
           auto-inactive: "false"
           github-base-url: "https://api.github.com"
-      - name: Assert action ran (may fail due to invalid token)
+      - name: Assert action completed without error
         run: |
-          echo "Action outcome: ${{ steps.action.outcome }}"
-          echo "PASS: action step completed (error expected with fake token)"
+          echo "Action completed successfully with all optional inputs"
+          echo "PASS"

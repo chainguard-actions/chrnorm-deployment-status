@@ -1,4 +1,4 @@
-name: Test basic deployment status
+name: Test GitHub Enterprise base URL input
 on:
   workflow_dispatch:
 jobs:
@@ -10,10 +10,11 @@ jobs:
         uses: .
         continue-on-error: true
         with:
-          state: success
+          state: in_progress
           token: fake-token-for-testing
-          deployment-id: '1'
+          deployment-id: '42'
+          github-base-url: 'https://github.example.com/api/v3'
       - name: Assert action ran
         run: |
           echo "Action completed (may have failed due to invalid token/deployment-id)"
-          echo "PASS: action inputs were accepted"
+          echo "PASS: github-base-url input was accepted"

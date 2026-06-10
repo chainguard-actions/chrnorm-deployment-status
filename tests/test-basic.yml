@@ -13,7 +13,13 @@ jobs:
           state: success
           token: fake-token-for-testing
           deployment-id: "1"
-      - name: Assert action ran (may fail due to invalid token)
+      - name: Assert action ran (may fail due to invalid token/deployment)
         run: |
-          echo "Action completed (with or without error due to fake token)"
-          echo "PASS"
+          echo "outcome: ${{ steps.action.outcome }}"
+          # The action will fail because the token/deployment-id are fake,
+          # but we just need to verify the inputs are accepted and the action runs.
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action ran (outcome: ${{ steps.action.outcome }})"

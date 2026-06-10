@@ -1,4 +1,4 @@
-name: Test GitHub Enterprise base URL input
+name: Test GitHub Enterprise and remaining inputs
 on:
   workflow_dispatch:
 jobs:
@@ -13,8 +13,16 @@ jobs:
           state: in_progress
           token: fake-token-for-testing
           deployment-id: "99"
-          github-base-url: "https://github.example.com/api/v3"
-      - name: Assert action ran (may fail due to invalid token/URL)
+          github-base-url: https://github.example.com/api/v3
+          environment-url: https://staging.example.com
+          auto-inactive: "false"
+      - name: Assert action ran with github-base-url input
         run: |
-          echo "Action completed (with or without error due to fake token/URL)"
-          echo "PASS"
+          echo "outcome: ${{ steps.action.outcome }}"
+          # The action will fail because the token/deployment-id are fake,
+          # but we just need to verify the inputs are accepted and the action runs.
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action ran with github-base-url (outcome: ${{ steps.action.outcome }})"

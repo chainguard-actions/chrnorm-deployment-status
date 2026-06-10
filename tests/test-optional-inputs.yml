@@ -15,12 +15,16 @@ jobs:
           deployment-id: "42"
           repo: my-repo
           owner: my-owner
-          description: "Deployment failed during testing"
+          log-url: https://example.com/logs
           environment: staging
-          log-url: "https://example.com/logs/123"
-          environment-url: "https://staging.example.com"
-          auto-inactive: "false"
-      - name: Assert action ran (may fail due to invalid token)
+          description: "Deployment failed in staging"
+      - name: Assert action ran with optional inputs
         run: |
-          echo "Action completed (with or without error due to fake token)"
-          echo "PASS"
+          echo "outcome: ${{ steps.action.outcome }}"
+          # The action will fail because the token/deployment-id are fake,
+          # but we just need to verify the inputs are accepted and the action runs.
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action ran with optional inputs (outcome: ${{ steps.action.outcome }})"

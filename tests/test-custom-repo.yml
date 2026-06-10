@@ -1,4 +1,4 @@
-name: Test basic deployment status
+name: Test deployment status with custom repo and owner
 on:
   workflow_dispatch:
 jobs:
@@ -10,14 +10,13 @@ jobs:
         uses: .
         continue-on-error: true
         with:
-          state: success
+          state: failure
           token: ${{ github.token }}
           deployment-id: "1"
-          environment: production
-          description: "Deployment completed successfully"
-          log-url: "https://example.com/logs"
-          environment-url: "https://example.com"
-          auto-inactive: "false"
+          repo: "my-repo"
+          owner: "my-owner"
+          github-base-url: "https://api.github.com"
+          auto-inactive: "true"
       - name: Assert action ran (API call may fail in test environment)
         run: |
           echo "Action outcome: ${{ steps.action.outcome }}"
